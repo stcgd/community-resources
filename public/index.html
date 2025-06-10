@@ -1,0 +1,68 @@
+/*
+ * ===================================================================================
+ * 文件: public/index.html (前端页面)
+ * ===================================================================================
+ * 作用: 这是用户在浏览器中看到的页面。它现在非常干净，只包含结构和样式。
+ */
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>社区互助资源查询 | Community Resource Finder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f0f2f5; }
+        .filter-btn { transition: all 0.2s ease-in-out; }
+        .filter-btn.active { background-color: #1d4ed8; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        #loader { transition: opacity 0.3s ease-out; }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <header class="bg-blue-600 shadow-md">
+        <div class="max-w-5xl mx-auto px-4 py-6">
+            <h1 class="text-3xl font-bold text-white text-center">社区互助资源查询</h1>
+            <p class="text-lg text-blue-100 text-center mt-1">Community Resource Finder</p>
+        </div>
+    </header>
+
+    <main class="py-8">
+        <div class="max-w-5xl mx-auto px-4">
+            <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
+                <div class="mb-4">
+                    <label for="search-input" class="block text-lg font-semibold text-gray-800 mb-2">搜索资源 (城市, 邮编, 或名称)</label>
+                    <input type="text" id="search-input" placeholder="例如: New York, 90210, Shelter..." class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                </div>
+                <div class="flex flex-wrap gap-3">
+                    <h3 class="w-full text-md font-medium text-gray-600 mb-1">按分类筛选:</h3>
+                    <button class="filter-btn active px-5 py-2 bg-gray-200 text-gray-800 rounded-full font-semibold" data-filter="All">全部资源</button>
+                    <button class="filter-btn px-5 py-2 bg-gray-200 text-gray-800 rounded-full font-semibold" data-filter="Food Bank">食物银行</button>
+                    <button class="filter-btn px-5 py-2 bg-gray-200 text-gray-800 rounded-full font-semibold" data-filter="Shelter">临时庇护所</button>
+                    <button class="filter-btn px-5 py-2 bg-gray-200 text-gray-800 rounded-full font-semibold" data-filter="Legal Aid">法律援助</button>
+                </div>
+            </div>
+            
+            <div id="loader" class="text-center py-16 hidden">
+                <p class="text-gray-500">正在加载资源...</p>
+            </div>
+
+            <div id="results-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            
+            <div id="no-results-message" class="hidden text-center py-16">
+                <h3 class="text-2xl font-semibold text-gray-500">找不到相关资源</h3>
+                <p class="text-gray-400 mt-2">请尝试更改搜索词或筛选条件。</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="text-center py-6 mt-8 bg-white border-t">
+        <p class="text-gray-500">&copy; 2024 Community Resource Finder. All Rights Reserved.</p>
+    </footer>
+
+    <script src="/script.js" defer></script>
+</body>
+</html>
