@@ -5,8 +5,42 @@ document.addEventListener('DOMContentLoaded', () => {
     const noResultsMessage = document.getElementById('no-results-message');
     const filterButtons = document.querySelectorAll('.filter-btn');
     const loader = document.getElementById('loader');
+    const newsTickerContainer = document.getElementById('news-ticker-container');
+    const newsTickerContent = document.getElementById('news-ticker-content');
 
     let activeFilter = 'All';
+
+    // **新增**: 获取并渲染新闻的函数
+    async function fetchAndRenderNews() {
+        try {
+            const response = await fetch('/api/news');
+            if (!response.ok) {
+                throw new Error('News feed could not be fetched.');
+            }
+            const newsItems = await response.json();
+
+            if (newsItems && newsItems.length > 0) {
+                let newsHtml = '';
+                newsItems.forEach(item => {
+                    newsHtml += `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="text-gray-700 hover:text-blue-600 mr-8">${item.title}</a>`;
+                });
+                
+                // 为了实现无缝滚动，复制一份内容
+                newsTickerContent.innerHTML = newsHtml + newsHtml; 
+                
+                // 根据内容长度动态调整动画速度，防止内容太少时滚动过快
+                const contentWidth = newsTickerContent.scrollWidth / 2;
+                const animationDuration = contentWidth / 60; // 调整分母可以改变速度，值越大越慢
+                newsTickerContent.style.animationDuration = `${animationDuration}s`;
+
+                newsTickerContainer.style.display = 'block';
+                newsTickerContent.classList.add('animate');
+            }
+        } catch (error) {
+            console.error("Failed to fetch news:", error);
+            newsTickerContainer.style.display = 'none'; // 如果出错则隐藏新闻条
+        }
+    }
 
     function renderResults(resources) {
         resultsContainer.innerHTML = '';
@@ -18,13 +52,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         resources.forEach(resource => {
-            // **调试步骤 1**: 在浏览器控制台打印出每个资源对象
-            // 让我们能看到前端实际接收到的数据结构和内容。
-            console.log("正在处理的资源 (Processing resource):", resource);
-
             let navButtonHtml = '';
             
-            // 检查地址信息是否存在且不为空字符串
             if (resource.address && resource.city && resource.state) {
                 const fullAddress = `${resource.address}, ${resource.city}, ${resource.state} ${resource.zip || ''}`;
                 const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(fullAddress)}`;
@@ -34,13 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                             Google Maps 导航
                         </a>
-                    </div>
-                `;
-            } else {
-                // **调试步骤 2**: 如果条件不满足，在卡片上显示提示信息。
-                navButtonHtml = `
-                    <div class="px-6 pb-6 pt-2">
-                        <p class="text-xs text-gray-400 text-center">无法生成导航：地址信息不完整</p>
                     </div>
                 `;
             }
@@ -72,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    async function fetchAndRender() {
+    async function fetchAndRenderResources() {
         const searchTerm = searchInput.value;
         const url = `/api/resources?category=${encodeURIComponent(activeFilter)}&search=${encodeURIComponent(searchTerm)}`;
         
@@ -95,10 +117,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    searchButton.addEventListener('click', fetchAndRender);
+    searchButton.addEventListener('click', fetchAndRenderResources);
     searchInput.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
-            fetchAndRender();
+            fetchAndRenderResources();
         }
     });
 
@@ -107,9 +129,11 @@ document.addEventListener('DOMContentLoaded', () => {
             filterButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
             activeFilter = button.dataset.filter;
-            fetchAndRender();
+            fetchAndRenderResources();
         });
     });
 
-    fetchAndRender();
+    // 页面加载时，同时获取资源和新闻
+    fetchAndRenderResources();
+    fetchAndRenderNews();
 });
