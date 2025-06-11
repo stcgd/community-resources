@@ -13,6 +13,18 @@
         .filter-btn { transition: all 0.2s ease-in-out; }
         .filter-btn.active { background-color: #1d4ed8; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         #loader { transition: opacity 0.3s ease-out; }
+
+        /* **新增**: 新闻滚动条动画 */
+        @keyframes ticker {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+        #news-ticker-content.animate {
+            animation: ticker 40s linear infinite; /* 持续时间会由 JS 动态调整 */
+        }
+        #news-ticker-content a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -24,12 +36,23 @@
         </div>
     </header>
 
+    <!-- **新增**: 新闻滚动条区域 -->
+    <div id="news-ticker-container" class="bg-white py-2 shadow-sm border-b border-gray-200 overflow-hidden" style="display: none;">
+        <div class="max-w-5xl mx-auto px-4 flex items-center">
+            <span class="bg-red-500 text-white text-xs font-bold uppercase px-2 py-1 rounded-md mr-4 flex-shrink-0">新闻</span>
+            <div class="relative flex-1 h-6 overflow-hidden">
+                <div id="news-ticker-content" class="absolute whitespace-nowrap">
+                    <!-- 新闻内容将由 JS 动态注入 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <main class="py-8">
         <div class="max-w-5xl mx-auto px-4">
             <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
                 <div class="mb-4">
                     <label for="search-input" class="block text-lg font-semibold text-gray-800 mb-2">搜索资源 (城市, 邮编, 或名称)</label>
-                    <!-- **更新**: 将输入框和按钮放在一个 flex 容器中 -->
                     <div class="flex gap-2">
                         <input type="text" id="search-input" placeholder="例如: New York, 90210, Shelter..." class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
                         <button id="search-btn" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">搜索</button>
