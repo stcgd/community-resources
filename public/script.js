@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('search-input');
-    const searchButton = document.getElementById('search-btn'); // **新增**: 获取按钮元素
+    const searchButton = document.getElementById('search-btn');
     const resultsContainer = document.getElementById('results-container');
     const noResultsMessage = document.getElementById('no-results-message');
     const filterButtons = document.querySelectorAll('.filter-btn');
@@ -18,9 +18,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         resources.forEach(resource => {
+            // **新增**: 如果有地址，则创建导航按钮的 HTML
+            let navButtonHtml = '';
+            if (resource.address && resource.city && resource.state) {
+                const fullAddress = `${resource.address}, ${resource.city}, ${resource.state} ${resource.zip}`;
+                const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(fullAddress)}`;
+                navButtonHtml = `
+                    <div class="px-6 pb-6 pt-2">
+                        <a href="${googleMapsUrl}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 w-full bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                            Google Maps 导航
+                        </a>
+                    </div>
+                `;
+            }
+
+            // **更新**: 卡片布局使用 flex，确保等高
             const card = `
-                <div class="bg-white rounded-xl shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
-                    <div class="p-6">
+                <div class="bg-white rounded-xl shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300 flex flex-col h-full">
+                    <div class="p-6 flex-grow">
                         <div class="font-bold text-xl text-blue-700 mb-2">${resource.name}</div>
                         <span class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full mb-3">${resource.category}</span>
                         <p class="text-gray-700 text-base mb-4">${resource.description || ''}</p>
@@ -39,6 +55,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             </li>
                         </ul>
                     </div>
+                    <!-- **新增**: 在这里插入导航按钮 -->
+                    ${navButtonHtml}
                 </div>`;
             resultsContainer.innerHTML += card;
         });
@@ -67,10 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // **更新**: 只有点击按钮时才搜索
     searchButton.addEventListener('click', fetchAndRender);
-
-    // **新增**: 在输入框中按回车键也触发搜索
     searchInput.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
             fetchAndRender();
@@ -82,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
             filterButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
             activeFilter = button.dataset.filter;
-            fetchAndRender(); // 点击分类按钮后也立即刷新
+            fetchAndRender();
         });
     });
 
