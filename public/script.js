@@ -1,12 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('search-input');
+    const searchButton = document.getElementById('search-btn'); // **新增**: 获取按钮元素
     const resultsContainer = document.getElementById('results-container');
     const noResultsMessage = document.getElementById('no-results-message');
     const filterButtons = document.querySelectorAll('.filter-btn');
     const loader = document.getElementById('loader');
 
     let activeFilter = 'All';
-    let searchTimeout;
 
     function renderResults(resources) {
         resultsContainer.innerHTML = '';
@@ -23,19 +23,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="p-6">
                         <div class="font-bold text-xl text-blue-700 mb-2">${resource.name}</div>
                         <span class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full mb-3">${resource.category}</span>
-                        <p class="text-gray-700 text-base mb-4">${resource.description}</p>
+                        <p class="text-gray-700 text-base mb-4">${resource.description || ''}</p>
                         <ul class="text-gray-600 space-y-2 text-sm">
                             <li class="flex items-start">
                                 <svg class="w-4 h-4 mr-2 mt-0.5 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                <span>${resource.address}, ${resource.city}, ${resource.state} ${resource.zip}</span>
+                                <span>${resource.address || 'N/A'}, ${resource.city}, ${resource.state} ${resource.zip}</span>
                             </li>
                             <li class="flex items-center">
                                  <svg class="w-4 h-4 mr-2 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-                                <span>${resource.phone}</span>
+                                <span>${resource.phone || 'N/A'}</span>
                             </li>
                             <li class="flex items-center">
                                 <svg class="w-4 h-4 mr-2 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                <span>${resource.hours}</span>
+                                <span>${resource.hours || 'N/A'}</span>
                             </li>
                         </ul>
                     </div>
@@ -67,9 +67,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    searchInput.addEventListener('input', () => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(fetchAndRender, 300); // 延迟搜索，避免频繁请求
+    // **更新**: 只有点击按钮时才搜索
+    searchButton.addEventListener('click', fetchAndRender);
+
+    // **新增**: 在输入框中按回车键也触发搜索
+    searchInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            fetchAndRender();
+        }
     });
 
     filterButtons.forEach(button => {
@@ -77,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
             filterButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
             activeFilter = button.dataset.filter;
-            fetchAndRender();
+            fetchAndRender(); // 点击分类按钮后也立即刷新
         });
     });
 
