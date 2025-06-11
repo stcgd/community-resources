@@ -1,11 +1,3 @@
-
-/*
- * ===================================================================================
- * 文件: public/script.js (前端逻辑)
- * ===================================================================================
- * 作用: 处理用户交互（搜索、点击按钮），向我们的后端 API 发送请求，
- * 并将返回的数据渲染成卡片显示在页面上。
- */
 document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('search-input');
     const resultsContainer = document.getElementById('results-container');
