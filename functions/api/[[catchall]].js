@@ -23,7 +23,7 @@ export async function onRequest(context) {
 
 async function handleNewsRequest(context) {
   try {
-    const RSS_URL = "http://feeds.feedburner.com/nonprofittimes/TCSn";
+    const RSS_URL = "https://nonprofitquarterly.org/feed/";
     const rssResponse = await fetch(RSS_URL, {
       headers: {
         "User-Agent": "Cloudflare-Worker/1.0"
