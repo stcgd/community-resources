@@ -1,24 +1,14 @@
-import Parser from 'rss-parser';
-
-const parser = new Parser();
-const FEED_URL = 'https://nonprofitquarterly.org/feed/';
-
+// functions/api/rss.js
 export async function onRequest(context) {
-  try {
-    const feed = await parser.parseURL(FEED_URL);
-    const items = feed.items.map(item => ({
-      title: item.title,
-      link: item.link,
-      pubDate: item.pubDate,
-      description: item.contentSnippet || item.content || item.summary || '',
-    }));
-    return new Response(JSON.stringify(items), {
-      headers: { "content-type": "application/json" },
-    });
-  } catch (err) {
-    return new Response(JSON.stringify({ error: 'Failed to fetch feed' }), {
-      status: 500,
-      headers: { "content-type": "application/json" },
-    });
-  }
+  const res = await fetch("https://nonprofitquarterly.org/feed/");
+  const xml = await res.text();
+
+  // 简单抓取标题
+  const items = [...xml.matchAll(/<item>[\s\S]*?<title>(.*?)<\/title>[\s\S]*?<link>(.*?)<\/link>/g)].map(
+    ([_, title, link]) => ({ title, link })
+  );
+
+  return new Response(JSON.stringify(items), {
+    headers: { "content-type": "application/json" },
+  });
 }
