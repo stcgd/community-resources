@@ -1,0 +1,7 @@
+name = "community-resource-finder"
+compatibility_date = "2025-05-30"
+
+[[d1_databases]]
+binding = "DB" # 在 Worker 中可以通过 env.DB 访问数据库
+database_name = "community-resources"
+database_id = "12820941-fa0a-49ba-b433-e7995ce27487" # <--- 重要：请替换成您自己的 D1 数据库 ID
