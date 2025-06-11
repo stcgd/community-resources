@@ -18,10 +18,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         resources.forEach(resource => {
-            // **新增**: 如果有地址，则创建导航按钮的 HTML
+            // **调试步骤 1**: 在浏览器控制台打印出每个资源对象
+            // 让我们能看到前端实际接收到的数据结构和内容。
+            console.log("正在处理的资源 (Processing resource):", resource);
+
             let navButtonHtml = '';
+            
+            // 检查地址信息是否存在且不为空字符串
             if (resource.address && resource.city && resource.state) {
-                const fullAddress = `${resource.address}, ${resource.city}, ${resource.state} ${resource.zip}`;
+                const fullAddress = `${resource.address}, ${resource.city}, ${resource.state} ${resource.zip || ''}`;
                 const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(fullAddress)}`;
                 navButtonHtml = `
                     <div class="px-6 pb-6 pt-2">
@@ -31,9 +36,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         </a>
                     </div>
                 `;
+            } else {
+                // **调试步骤 2**: 如果条件不满足，在卡片上显示提示信息。
+                navButtonHtml = `
+                    <div class="px-6 pb-6 pt-2">
+                        <p class="text-xs text-gray-400 text-center">无法生成导航：地址信息不完整</p>
+                    </div>
+                `;
             }
 
-            // **更新**: 卡片布局使用 flex，确保等高
             const card = `
                 <div class="bg-white rounded-xl shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300 flex flex-col h-full">
                     <div class="p-6 flex-grow">
@@ -43,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <ul class="text-gray-600 space-y-2 text-sm">
                             <li class="flex items-start">
                                 <svg class="w-4 h-4 mr-2 mt-0.5 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                <span>${resource.address || 'N/A'}, ${resource.city}, ${resource.state} ${resource.zip}</span>
+                                <span>${resource.address || 'N/A'}, ${resource.city || ''}, ${resource.state || ''} ${resource.zip || ''}</span>
                             </li>
                             <li class="flex items-center">
                                  <svg class="w-4 h-4 mr-2 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
@@ -55,7 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             </li>
                         </ul>
                     </div>
-                    <!-- **新增**: 在这里插入导航按钮 -->
                     ${navButtonHtml}
                 </div>`;
             resultsContainer.innerHTML += card;
@@ -101,6 +111,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 初始加载
     fetchAndRender();
 });
